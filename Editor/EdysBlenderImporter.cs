@@ -12,7 +12,9 @@ http://www.edy.es
 
 using UnityEngine;
 using UnityEditor;
+
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -34,6 +36,7 @@ public class EdysBlenderImporter : AssetPostprocessor
 		{
 		string filePath = assetPath.ToLowerInvariant();
 		if (Path.GetExtension(filePath) != ".blend") m_fixBlender = false;
+    if (AssetDatabase.GetLabels(assetImporter).Contains("Default")) m_fixBlender = false;
 
 		// Look for specific importer commands in the file name or path.
 		// Imported objects can be located in a subfolder named with the import commands.
@@ -41,35 +44,38 @@ public class EdysBlenderImporter : AssetPostprocessor
 
 		int i1 = filePath.LastIndexOf('[');
 		int i2 = filePath.LastIndexOf(']');
-		if (i1 < 0 || i2 < 0 || i1 >= i2) return;
 
-		string[] tokens = filePath.Substring(i1+1, i2-i1-1).Split('.');
-		if (tokens.Length == 0 || tokens[0] != "importer") return;
+    try
+    {
+      string[] tokens = filePath.Substring(i1+1, i2-i1-1).Split('.');
 
-		string options = "";
+      string options = "";
 
-		for (int i=1, c=tokens.Length; i<c; i++)
-			{
-			string token = tokens[i];
+      for (int i=1, c=tokens.Length; i<c; i++)
+        {
+        string token = tokens[i];
 
-			switch (token)
-				{
-				case "skipfix": m_fixBlender = false; break;
-				case "forcefix": m_fixBlender = true; break;
-				case "opt": m_optimize = true; break;
-				case "zreverse": m_zReverse = true; break;
-				case "noanimfix": m_animFix = false; break;
-				case "nofloatfix": m_floatFix = false; break;
-				case "nomods": m_postMods = false; break;
-				case "forcefixroot": m_forceFixRoot = true; break;
+        switch (token)
+          {
+          case "skipfix": m_fixBlender = false; break;
+          case "forcefix": m_fixBlender = true; break;
+          case "opt": m_optimize = true; break;
+          case "zreverse": m_zReverse = true; break;
+          case "noanimfix": m_animFix = false; break;
+          case "nofloatfix": m_floatFix = false; break;
+          case "nomods": m_postMods = false; break;
+          case "forcefixroot": m_forceFixRoot = true; break;
 
-				default:
-					token = "";
-					break;
-				}
+          default:
+            token = "";
+            break;
+          }
 
-			if (token != "") options += token + " ";
-			}
+        if (token != "") options += token + " ";
+        }
+    } catch(System.Exception e)
+    {
+    }
 
 		// Process the file with the specified options
 
@@ -82,13 +88,6 @@ public class EdysBlenderImporter : AssetPostprocessor
 			i2 = name.IndexOf("]");
 			if (i1 >= 0 && i2 >= 0 && i1 < i2)
 				go.name = name.Remove(i1, i2-i1+1).Trim(new []{' ','_'});
-
-			// Go processing
-
-			LogClear();
-			LogInfo("EDY's ADVANCED MODEL IMPORTER:  " + go.name + "   Options: " + options);
-			LogInfo("Click for details");
-			LogInfo("");
 
 			if (m_fixBlender)
 				{
@@ -107,28 +106,6 @@ public class EdysBlenderImporter : AssetPostprocessor
 			LogFlush();
 			}
 		}
-
-
-	// Menu option for finding duplicated meshes in the current scene and reference them
-	// as instances of a single unique mesh.
-	//
-	// Only the meshes that are referenced in some way are included in the build,
-	// even if the original 3D file contains many more meshes.
-
-	[MenuItem ("GameObject/Optimize mesh instances in this scene")]
-	static void OptimizeMeshInstancesMenu ()
-		{
-		LogClear();
-
-		MeshFilter[] meshes = GameObject.FindObjectsOfType<MeshFilter>();
-
-		LogInfo(string.Format("{0} meshes found in the scene. Searching for duplicates...", meshes.Length));
-		LogInfo("Click for details");
-
-		OptimizeMeshes(meshes);
-		LogFlush();
-		}
-
 
 	static void OptimizeMeshes (MeshFilter[] meshes)
 		{

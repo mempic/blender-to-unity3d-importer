@@ -1,6 +1,10 @@
 ﻿Blender to Unity 3D importer
 ============================
+## Mempic's changes
+In our fork the only change is the file processing rules.  
+**By default** import rules are applied to all the files with a **\*.blend** extension, and it is possible to ignore the rules by setting a special label **Default** on the file.
 
+## Original
 An advanced Blender model importer for Unity 3D
 
 By Angel García "Edy"
