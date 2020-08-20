@@ -9,7 +9,7 @@ By Angel García "Edy"
 http://www.edy.es
 */
 
-
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -955,3 +955,4 @@ public class EdysBlenderImporter : AssetPostprocessor
 		m_debugInfo = "";
 		}
 	}
+#endif // UNITY_EDITOR
