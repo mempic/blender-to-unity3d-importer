@@ -1,0 +1,12 @@
+{
+  "name": "com.mempic.blender",
+  "version": "1.0.0",
+  "displayName": "Blender Importer",
+  "description": "An advanced Blender model importer for Unity. By default import rules are applied to all the files with a *.blend extension, and it is possible to ignore the rules by setting a special label Default on the file.",
+  "unity": "2019.4",
+  "author": {
+    "name": "Mempic",
+    "email": "contact@mempic.com",
+    "url": "https://www.mempic.com"
+  }
+}
