@@ -1,0 +1,6 @@
+{
+  "name": "com.mempic.blender",
+  "includePlatforms": [
+    "Editor"
+  ]
+}
